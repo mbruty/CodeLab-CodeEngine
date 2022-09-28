@@ -21,8 +21,6 @@ fn main() -> Result<()> {
         panic!("No language provided!");
     }
 
-    fs::create_dir("./unsafe").expect("Could not create unsafe directory");
-
     let lang: Languages = match args[1].to_lowercase().as_str() {
         "--language=dotnet" => Languages::Dotnet,
         "--language=javascript" => Languages::JavaScript,

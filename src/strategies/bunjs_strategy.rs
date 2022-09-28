@@ -12,7 +12,7 @@ impl Strategy for BunJavaScriptStrategy {
     }
 
     fn run(&self) -> String {
-        exec_command("/usr/bin/bun/bun", Vec::from(["run", "index.js"]))
+        exec_command("/root/.bun/bin/bun", Vec::from(["run", "index.js"]))
     }
 
     fn get_command(&self) -> &'static str {

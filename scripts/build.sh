@@ -1,8 +1,8 @@
 clear
-echo "Building code engine"
+echo "Starting build of code_engine"
 cargo build --release
 echo "Starting build for all images"
-for i in "node"
+for i in "bun" "dotnet"
 do
     echo "Building $i"
     docker build -f ./docker/$i.dockerfile -t $i-engine .

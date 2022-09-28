@@ -1,8 +1,6 @@
-FROM node:current-alpine3.16
-RUN pwd
-RUN apk update
-RUN apk add procps
-RUN apk add sysstat
+FROM node:16.17.1
+RUN apt-get update
+RUN apt-get install procps -y
+RUN apt-get install sysstat -y
 COPY ./target/release/code_engine_rust .
-RUN ls
 ENTRYPOINT ["./code_engine_rust", "--language=node"]
