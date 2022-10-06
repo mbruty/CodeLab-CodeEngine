@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" name="Application.dll" fullname="/mnt/c/Users/mikeb/Documents/GitHub/COMP3000-CodeEngine/unsafe/bin/Release/net6.0/Application.dll" testcasecount="2" result="Failed" start-time="2022-10-06T21:30:23.1860725Z" end-time="2022-10-06T21:30:23.2375131Z" duration="0.051404" total="2" passed="1" failed="1" inconclusive="0" skipped="0" warnings="0" asserts="2" random-seed="1212626001">
+  <command-line><![CDATA[/mnt/c/Users/mikeb/Documents/GitHub/COMP3000-CodeEngine/unsafe/bin/Release/net6.0/Application.dll]]></command-line>
+  <filter>
+    <test>program</test>
+  </filter>
+  <test-suite type="Assembly" id="1003" name="Application.dll" fullname="/mnt/c/Users/mikeb/Documents/GitHub/COMP3000-CodeEngine/unsafe/bin/Release/net6.0/Application.dll" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2022-10-06T21:30:23.1860725Z" end-time="2022-10-06T21:30:23.2375131Z" duration="0.051404" total="2" passed="1" failed="1" warnings="0" inconclusive="0" skipped="0" asserts="2">
+    <environment framework-version="3.13.3.0" clr-version="6.0.8" os-version="Linux 5.10.102.1-microsoft-standard-WSL2 #1 SMP Wed Mar 2 00:30:59 UTC 2022" platform="Unix" cwd="/mnt/c/Users/mikeb/Documents/GitHub/COMP3000-CodeEngine/unsafe" machine-name="DESKTOP-9GMK5UJ" user="mbruty" user-domain="DESKTOP-9GMK5UJ" culture="" uiculture="" os-architecture="x64" />
+    <settings>
+      <setting name="LOAD" value="System.Collections.Generic.List`1[System.String]" />
+      <setting name="WorkDirectory" value="/mnt/c/Users/mikeb/Documents/GitHub/COMP3000-CodeEngine/unsafe" />
+      <setting name="NumberOfTestWorkers" value="16" />
+    </settings>
+    <properties>
+      <property name="_PID" value="32621" />
+      <property name="_APPDOMAIN" value="Application" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="TestSuite" id="1004" name="program" fullname="program" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2022-10-06T21:30:23.1899688Z" end-time="2022-10-06T21:30:23.2374691Z" duration="0.047500" total="2" passed="1" failed="1" warnings="0" inconclusive="0" skipped="0" asserts="2">
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestFixture" id="1000" name="UnitTests" fullname="program.UnitTests" classname="program.UnitTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2022-10-06T21:30:23.1917358Z" end-time="2022-10-06T21:30:23.2371553Z" duration="0.045419" total="2" passed="1" failed="1" warnings="0" inconclusive="0" skipped="0" asserts="2">
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-case id="1002" name="FourTimesTwo_IsEight" fullname="program.UnitTests.FourTimesTwo_IsEight" methodname="FourTimesTwo_IsEight" classname="program.UnitTests" runstate="Runnable" seed="631277517" result="Passed" start-time="2022-10-06T21:30:23.1933028Z" end-time="2022-10-06T21:30:23.2030910Z" duration="0.009852" asserts="1" />
+        <test-case id="1001" name="TwoTimesTwo_IsFour" fullname="program.UnitTests.TwoTimesTwo_IsFour" methodname="TwoTimesTwo_IsFour" classname="program.UnitTests" runstate="Runnable" seed="1409442685" result="Failed" start-time="2022-10-06T21:30:23.2044207Z" end-time="2022-10-06T21:30:23.2363548Z" duration="0.031934" asserts="1">
+          <failure>
+            <message><![CDATA[  Expected: 5
+  But was:  4
+]]></message>
+            <stack-trace><![CDATA[   at program.UnitTests.TwoTimesTwo_IsFour() in /mnt/c/Users/mikeb/Documents/GitHub/COMP3000-CodeEngine/unsafe/UnitTests.cs:line 22
+]]></stack-trace>
+          </failure>
+          <assertions>
+            <assertion result="Failed">
+              <message><![CDATA[  Expected: 5
+  But was:  4
+]]></message>
+              <stack-trace><![CDATA[   at program.UnitTests.TwoTimesTwo_IsFour() in /mnt/c/Users/mikeb/Documents/GitHub/COMP3000-CodeEngine/unsafe/UnitTests.cs:line 22
+]]></stack-trace>
+            </assertion>
+          </assertions>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

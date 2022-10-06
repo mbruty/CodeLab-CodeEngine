@@ -1,5 +1,5 @@
 use crate::strategies::Strategy;
-use crate::utils::{exec_command, exec_command_output, write_to_file};
+use crate::utils::{exec_command_output, write_to_file};
 
 pub struct BunTypeScriptStrategy;
 impl Strategy for BunTypeScriptStrategy {

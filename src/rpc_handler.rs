@@ -33,6 +33,7 @@ pub fn handle(instruction: &str, language: Languages) -> String {
     // Temp: Just build without validation
     let now = Instant::now();
     let deserialized: Instruction = serde_json::from_str(&instruction).unwrap();
+    ctx.setup_tests(&*deserialized.test);
     if let Err(e) = ctx.build(&*deserialized.code) {
         let code_result = CodeResult{
             output: "".parse().unwrap(),
@@ -44,7 +45,6 @@ pub fn handle(instruction: &str, language: Languages) -> String {
 
         return serde_json::to_string(&code_result).unwrap();
     }
-    ctx.setup_tests(&*deserialized.test);
     let elapsed = now.elapsed();
     println!("[.{}] build took: {:.2?}", ctx.get_queue_name(), elapsed);
 
