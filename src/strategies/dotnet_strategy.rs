@@ -1,9 +1,9 @@
 use crate::strategies::Strategy;
-use crate::utils::{exec_command, write_to_file};
+use crate::utils::{exec_command, exec_command_output, write_to_file};
 
 pub struct DotnetStrategy;
 impl Strategy for DotnetStrategy {
-    fn build(&self, code: &str) -> String {
+    fn build(&self, code: &str) -> Result<String, String> {
         const CSPROJ: &str = "
             <Project Sdk=\"Microsoft.NET.Sdk\">
                 <PropertyGroup>
@@ -18,7 +18,20 @@ impl Strategy for DotnetStrategy {
         write_to_file(CSPROJ, "Application.csproj");
         // Write the program to fs
         write_to_file(code, "Program.cs");
-        exec_command("dotnet", Vec::from(["build", "--configuration", "Release"]))
+        let output = exec_command_output("dotnet", Vec::from(["build", "--configuration", "Release"]));
+        let stdout = String::from_utf8(output.stdout).expect("");
+        println!("[dotnet] Build status: {}", output.status);
+        println!("[dotnet] Build stdout: {}", stdout);
+        println!("[dotnet] Build stderr: {}", String::from_utf8(output.stderr).expect(""));
+
+        if output.status.code().expect("No status code for program") != 0 {
+            return Err(stdout);
+        }
+        return Ok(stdout);
+    }
+
+    fn setup_tests(&self, tests: &str) -> String {
+        String::new()
     }
 
     fn run(&self) -> String {

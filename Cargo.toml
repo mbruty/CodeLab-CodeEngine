@@ -12,3 +12,6 @@ lto = true # Link Time Optimization (LTO)
 amiquip = "0.4"
 regex = "1"
 openssl = { version = "0.10", features = ["vendored"] }
+serde = "*"
+serde_json = "*"
+serde_derive = "*"

@@ -8,7 +8,6 @@ use std::time::Instant;
 use crate::languages::Languages;
 use crate::rpc_handler::handle;
 use crate::strategies::get_strategy_for;
-
 mod strategies;
 mod utils;
 mod languages;
@@ -25,7 +24,6 @@ fn main() -> Result<()> {
         "--language=dotnet" => Languages::Dotnet,
         "--language=javascript" => Languages::JavaScript,
         "--language=typescript" => Languages::TypeScript,
-        "--language=node" => Languages::NodeJavaScript,
         "--language=bun" => Languages::BunJavaScript,
         _ => panic!("No language provided!")
     };

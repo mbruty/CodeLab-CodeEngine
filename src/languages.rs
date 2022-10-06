@@ -3,6 +3,5 @@ pub enum Languages {
     Dotnet,
     JavaScript,
     TypeScript,
-    NodeJavaScript,
     BunJavaScript
 }

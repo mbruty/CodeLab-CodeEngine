@@ -5,14 +5,19 @@ pub struct BunTypeScriptStrategy;
 impl Strategy for BunTypeScriptStrategy {
 
     // We don't build here in JS land
-    fn build(&self, code: &str) -> String {
+    fn build(&self, code: &str) -> Result<String, String> {
         // Write the program to fs
         write_to_file(code, "index.ts");
-        String::new()
+        Ok(String::new())
     }
 
     fn run(&self) -> String {
-        exec_command("/usr/bin/bun/bun", Vec::from(["run", "index.ts"]))
+        exec_command("/usr/bin/bun/bun", Vec::from(["wiptest"]))
+    }
+
+    fn setup_tests(&self, tests: &str) -> String {
+        write_to_file(tests, "index.test.ts");
+        String::new()
     }
 
     fn get_command(&self) -> &'static str {
