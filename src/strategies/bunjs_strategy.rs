@@ -7,7 +7,9 @@ impl Strategy for BunJavaScriptStrategy {
     // We don't build here in JS land
     fn build(&self, code: &str) -> Result<String, String> {
         // Write the program to fs
-        write_to_file(code, "index.js");
+        // Append an export for the code so that the tests can read it
+        let export_code = code.to_owned() + "\nexport default solve;";
+        write_to_file(export_code.as_str(), "index.ts");
         Ok(String::new())
     }
 
@@ -16,10 +18,10 @@ impl Strategy for BunJavaScriptStrategy {
         String::new()
     }
 
-    fn run(&self) -> String {
+    fn run(&self) -> (String, bool) {
         // For some reason bun's test outputs to stderr
         let output = exec_command_output("/usr/bin/bun/bun", Vec::from(["wiptest"]));
-        String::from_utf8(output.stderr).expect("Stdout was not a string")
+        (String::from_utf8(output.stderr).expect("Stdout was not a string"), output.status.success())
     }
 
     fn get_command(&self) -> &'static str {

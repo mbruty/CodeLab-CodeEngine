@@ -34,8 +34,10 @@ impl Strategy for DotnetStrategy {
         String::new()
     }
 
-    fn run(&self) -> String {
-        exec_command("./bin/Release/net6.0/Application", Vec::from([]))
+    fn run(&self) -> (String, bool) {
+        let output = exec_command_output("./bin/Release/net6.0/Application", Vec::from([]));
+        (String::from_utf8(output.stderr).expect("Stdout was not a string"), output.status.success())
+
     }
 
     fn get_command(&self) -> &'static str {

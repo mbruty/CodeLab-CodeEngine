@@ -23,7 +23,8 @@ struct CodeResult {
     output: String,
     stats: Vec<Stat>,
     execution_time_ms: u32,
-    error_text: String
+    error_text: String,
+    is_successful: bool
 }
 pub fn handle(instruction: &str, language: Languages) -> String {
     // ToDo: Read this with commandline args
@@ -37,7 +38,8 @@ pub fn handle(instruction: &str, language: Languages) -> String {
             output: "".parse().unwrap(),
             stats: Vec::new(),
             execution_time_ms: 0,
-            error_text: e
+            error_text: e,
+            is_successful: false
         };
 
         return serde_json::to_string(&code_result).unwrap();
@@ -51,12 +53,13 @@ pub fn handle(instruction: &str, language: Languages) -> String {
     let shared_output = Arc::new(Mutex::new(String::new()));
     let shared_stats = Arc::new(Mutex::new(String::new()));
     let shared_time = Arc::new(Mutex::new(String::new()));
-
+    let shared_sucess = Arc::new(Mutex::new(false));
     // Clone the output and stats here so shared_output is not moved into the thread closure
     // This allows us to access it again in the current closure
     let output = Arc::clone(&shared_output);
     let stats = Arc::clone(&shared_stats);
     let time = Arc::clone(&shared_time);
+    let sucess = Arc::clone(&shared_sucess);
 
     let stats_thread = thread::spawn(move || {
 
@@ -102,10 +105,13 @@ pub fn handle(instruction: &str, language: Languages) -> String {
         // Clone the objects we need
         // Lock the items we need
         let mut output_mutex = output.lock().unwrap();
+        let mut sucess_mutex = sucess.lock().unwrap();
         let mut time_mutex = time.lock().unwrap();
 
         let now = Instant::now();
-        *output_mutex = ctx_1.run();
+        let output = ctx_1.run();
+        *output_mutex = output.0;
+        *sucess_mutex = output.1;
         let elapsed = now.elapsed();
 
         *time_mutex = format!("{:.2?}", elapsed.as_millis());
@@ -119,9 +125,11 @@ pub fn handle(instruction: &str, language: Languages) -> String {
     let output_copy = Arc::clone(&shared_output);
     let stats_copy = Arc::clone(&shared_stats);
     let time_copy = Arc::clone(&shared_time);
+    let sucess_copy = Arc::clone(&shared_sucess);
     let final_output = output_copy.lock().unwrap();
     let final_stats = stats_copy.lock().unwrap();
     let final_time = time_copy.lock().unwrap();
+    let final_sucess = sucess_copy.lock().unwrap();
 
     let stat_lines = (*final_stats.as_str().split("\n").collect::<Vec<&str>>()).to_owned();
     let mut stats: Vec<Stat> = Vec::new();
@@ -136,7 +144,8 @@ pub fn handle(instruction: &str, language: Languages) -> String {
         output: final_output.to_string(),
         stats,
         execution_time_ms: final_time.parse().unwrap(),
-        error_text: "".parse().unwrap()
+        error_text: "".parse().unwrap(),
+        is_successful: *final_sucess
     };
 
     serde_json::to_string(&code_result).unwrap()

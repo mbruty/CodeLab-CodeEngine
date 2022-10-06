@@ -7,7 +7,7 @@ pub mod bunts_strategy;
 pub trait Strategy {
     fn build(&self, code: &str) -> Result<String, String>;
     fn setup_tests(&self, tests: &str) -> String;
-    fn run<'a>(&self) -> String;
+    fn run<'a>(&self) -> (String, bool);
     fn get_command(&self) -> &'static str;
     fn get_queue_name(&self) -> &'static str;
     fn print_greeting(&self);
