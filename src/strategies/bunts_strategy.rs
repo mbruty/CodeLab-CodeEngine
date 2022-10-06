@@ -19,7 +19,7 @@ impl Strategy for BunTypeScriptStrategy {
     }
 
     fn run(&self) -> (String, bool) {
-        let output = exec_command_output("/usr/bin/bun/bun", Vec::from(["wiptest"]));
+        let output = exec_command_output("/root/.bun/bin/bun", Vec::from(["wiptest"]));
         println!("Sucess: {}", output.status.success());
         (String::from_utf8(output.stderr).expect("Stdout was not a string"), output.status.success())
     }

@@ -20,7 +20,7 @@ impl Strategy for BunJavaScriptStrategy {
 
     fn run(&self) -> (String, bool) {
         // For some reason bun's test outputs to stderr
-        let output = exec_command_output("/usr/bin/bun/bun", Vec::from(["wiptest"]));
+        let output = exec_command_output("/root/.bun/bin/bun", Vec::from(["wiptest"]));
         (String::from_utf8(output.stderr).expect("Stdout was not a string"), output.status.success())
     }
 
