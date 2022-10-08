@@ -20,7 +20,6 @@ impl Strategy for BunTypeScriptStrategy {
 
     fn run(&self) -> (String, bool) {
         let output = exec_command_output("/root/.bun/bin/bun", Vec::from(["wiptest"]));
-        println!("Sucess: {}", output.status.success());
         (String::from_utf8(output.stderr).expect("Stdout was not a string"), output.status.success())
     }
 
@@ -31,4 +30,21 @@ impl Strategy for BunTypeScriptStrategy {
     fn get_queue_name(&self) -> &'static str { "TS" }
 
     fn print_greeting(&self) { println!("[.] Awaiting RPC requests on the TypeScript queue"); }
+
+    fn process_result(&self, data: String) -> (String, i32) {
+        let mut split: Vec<&str> = data.split('\n').collect();
+        split.remove(0);
+        split.pop();
+        let mut last: String = split.last().unwrap().parse().unwrap();
+        let mut exec_time_ms = -1;
+        if last != "" {
+            let split2: Vec<&str> = last.split("[").collect();
+            last = split2[1].replace("ms]", "");
+            let float_time = last.parse::<f32>().unwrap_or_else(|_| {
+                return -1 as f32;
+            });
+            exec_time_ms = float_time as i32;
+        }
+        return (split.join("\n"), exec_time_ms);
+    }
 }

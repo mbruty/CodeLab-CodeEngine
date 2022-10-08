@@ -11,6 +11,7 @@ pub trait Strategy {
     fn get_command(&self) -> &'static str;
     fn get_queue_name(&self) -> &'static str;
     fn print_greeting(&self);
+    fn process_result(&self, data: String) -> (String, i32);
 }
 
 pub fn get_strategy_for(lang: Languages) -> Box<dyn Strategy> {

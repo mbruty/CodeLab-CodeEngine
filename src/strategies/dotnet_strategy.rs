@@ -18,9 +18,8 @@ impl Strategy for DotnetStrategy {
     <PackageReference Include=\"nunit\" Version=\"3.13.3\" />
     <PackageReference Include=\"Microsoft.NET.Test.Sdk\" Version=\"17.3.2\" />
     <PackageReference Include=\"NUnitLite\" Version=\"3.13.3\" />
-    <PackageReference Include=\"NUnitTestAdapter.WithFramework\" Version=\"2.0.0\" />
+    <PackageReference Include=\"NUnit3TestAdapter\" Version=\"4.2.1\" />
   </ItemGroup>
-
 </Project>
 ";
 
@@ -47,7 +46,12 @@ public class Program
         let stdout = String::from_utf8(output.stdout).expect("");
 
         if output.status.code().expect("No status code for program") != 0 {
-            return Err(stdout);
+            let mut split: Vec<&str> = stdout.split('\n').collect();
+            while split[0] != "Build FAILED." {
+                split.remove(0);
+            }
+
+            return Err(split.join("\n"));
         }
         return Ok(stdout);
     }
@@ -60,9 +64,6 @@ public class Program
     fn run(&self) -> (String, bool) {
         let output = exec_command_output("./bin/Release/net6.0/Application", Vec::from([]));
         let stdout = String::from_utf8(output.stdout).expect("");
-        println!("[dotnet] Run status: {}", output.status);
-        println!("[dotnet] Run stdout: {}", stdout);
-        println!("[dotnet] Run stderr: {}", String::from_utf8(output.stderr).expect(""));
         (stdout, output.status.success())
 
     }
@@ -74,4 +75,38 @@ public class Program
     fn get_queue_name(&self) -> &'static str { "DOTNET" }
 
     fn print_greeting(&self) { println!("[.] Awaiting RPC requests on the Dotnet queue"); }
+
+    fn process_result(&self, data: String) -> (String, i32) {
+        let mut split: Vec<&str> = data.split('\n').collect();
+        let mut output: Vec<&str> = Vec::new();
+        let mut gather_errors = false;
+        let mut exec_time_ms: i32 = -1;
+        // Remove un-necessary lines
+        while split[0] != "Test Run Summary" {
+            if split[0] == "Errors, Failures and Warnings" {
+                gather_errors = true;
+            }
+            if split[0] == "Run Settings" {
+                gather_errors = false;
+            }
+            if gather_errors && split[0] != "" {
+                output.push(split[0]);
+            }
+            split.remove(0);
+        }
+
+        for line in &split {
+            if line.starts_with("    Duration: ") {
+                let copy = line.clone();
+                let mut ms_str = copy.replace("    Duration: ", "");
+                ms_str = ms_str.replace(" seconds", "");
+                let seconds: f32 = ms_str.parse().unwrap_or_else(|_| -1) as f32;
+                exec_time_ms = (seconds * 1000 as f32) as i32;
+            }
+        }
+        split.pop();
+        split.pop();
+        output.append(&mut split);
+        return (output.join("\n"), exec_time_ms)
+    }
 }

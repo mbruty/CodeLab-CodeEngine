@@ -42,7 +42,6 @@ pub fn handle(instruction: &str, language: Languages) -> String {
             error_text: e,
             is_successful: false
         };
-
         return serde_json::to_string(&code_result).unwrap();
     }
     let elapsed = now.elapsed();
@@ -140,13 +139,14 @@ pub fn handle(instruction: &str, language: Languages) -> String {
         }
     }
 
+    let processed = ctx.process_result(final_output.to_string());
+
     let code_result = CodeResult{
-        output: final_output.to_string(),
+        output: processed.0,
         stats,
-        execution_time_ms: final_time.parse().unwrap(),
+        execution_time_ms: if processed.1 == -1 { final_time.parse().unwrap() } else { processed.1 } as u32,
         error_text: "".parse().unwrap(),
         is_successful: *final_sucess
     };
-
-    serde_json::to_string(&code_result).unwrap()
+    return serde_json::to_string(&code_result).unwrap();
 }

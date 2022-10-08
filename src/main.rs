@@ -58,6 +58,7 @@ fn main() -> Result<()> {
     for (_i, message) in consumer.receiver().iter().enumerate() {
         match message {
             ConsumerMessage::Delivery(delivery) => {
+                println!("[.] Received a request");
                 let body = String::from_utf8_lossy(&delivery.body);
 
                 let (reply_to, corr_id) = match (
