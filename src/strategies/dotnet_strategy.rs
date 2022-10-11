@@ -147,10 +147,15 @@ public class Solution
         for line in &split {
             if line.starts_with("    Duration: ") {
                 let copy = line.clone();
-                let mut ms_str = copy.replace("    Duration: ", "");
-                ms_str = ms_str.replace(" seconds", "");
-                let seconds: f32 = ms_str.parse().unwrap_or_else(|_| -1) as f32;
-                exec_time_ms = (seconds * 1000 as f32) as i32;
+                let mut seconds = copy.replace("    Duration: ", "");
+                seconds = seconds.replace(" seconds", "");
+
+                let ms: f32 = match seconds.parse::<f32>() {
+                    Ok(v) => v * 1000.0,
+                    Err(_) => -1.0
+                };
+
+                exec_time_ms = ms as i32;
             }
         }
         split.pop();
