@@ -5,6 +5,7 @@ pub mod bunjs_strategy;
 pub mod bunts_strategy;
 
 pub trait Strategy {
+    fn warm_up(&self);
     fn build(&self, code: &str) -> Result<String, String>;
     fn setup_tests(&self, tests: &str) -> String;
     fn run<'a>(&self) -> (String, bool);

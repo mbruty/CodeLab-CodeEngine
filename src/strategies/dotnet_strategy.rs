@@ -1,9 +1,10 @@
 use crate::strategies::Strategy;
-use crate::utils::{exec_command_output, write_to_file};
+use crate::utils::{delete_file, exec_command_output, write_to_file};
 
 pub struct DotnetStrategy;
 impl Strategy for DotnetStrategy {
-    fn build(&self, code: &str) -> Result<String, String> {
+    fn warm_up(&self) {
+        println!("[.DOTNET] Warming up");
         const CSPROJ: &str = "
 <Project Sdk=\"Microsoft.NET.Sdk\">
   <PropertyGroup>
@@ -22,6 +23,8 @@ impl Strategy for DotnetStrategy {
   </ItemGroup>
 </Project>
 ";
+        // Write the csproj to fs
+        write_to_file(CSPROJ, "Application.csproj");
 
         const TEST_RUNNER: &str = "
 using NUnitLite;
@@ -37,10 +40,56 @@ public class Program
     }
 }
 ";
-        // Write the csproj to fs
-        write_to_file(CSPROJ, "Application.csproj");
-        // Write the program to fs
+        // Write the test runner code to the file system
         write_to_file(TEST_RUNNER, "Program.cs");
+
+        const DUMMY_TESTS: &str = "
+using NUnit.Framework;
+
+namespace program;
+
+[TestFixture]
+public class TestRunner
+{
+    private Solution? _solution;
+
+    [SetUp]
+    public void SetUp()
+    {
+        _solution = new Solution();
+    }
+
+    [Test]
+    public void DummyTest()
+    {
+        Assert.AreEqual(0, _solution?.Solve());
+    }
+}";
+
+        // Write the dummy tests to the fs
+        self.setup_tests(DUMMY_TESTS);
+
+        const DUMMY_CODE: &str = "
+namespace program;
+public class Solution
+{
+    public int Solve()
+    {
+        // Your code here
+        return 0;
+    }
+}";
+        // Write the dummy code to the FS
+        self.build(DUMMY_CODE).expect("TODO: panic message");
+
+        // Clean up the files that don't need to still be there
+        delete_file("Solution.cs");
+        delete_file("UnitTests.cs");
+    }
+
+    fn build(&self, code: &str) -> Result<String, String> {
+
+        // Write the program to fs
         write_to_file(code, "Solution.cs");
         let output = exec_command_output("dotnet", Vec::from(["build", "--configuration", "Release"]));
         let stdout = String::from_utf8(output.stdout).expect("");

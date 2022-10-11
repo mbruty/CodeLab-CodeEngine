@@ -6,6 +6,11 @@ pub fn write_to_file(content: &str, file_name: &str) {
         .expect("Unable to write file");
 }
 
+pub fn delete_file(file_name: &str) {
+    fs::remove_file("./unsafe/".to_owned() + file_name)
+        .expect("Unable to remove file");
+}
+
 pub fn exec_command<'a>(command: &str, args: Vec<&str>) -> String {
     let child = Command::new(command)
         .current_dir("./unsafe")

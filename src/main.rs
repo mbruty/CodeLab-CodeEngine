@@ -30,6 +30,8 @@ fn main() -> Result<()> {
 
     let ctx = get_strategy_for(lang);
 
+    ctx.warm_up();
+
     // Create the code folder
     fs::create_dir_all("./unsafe").expect("TODO: panic message");
 
