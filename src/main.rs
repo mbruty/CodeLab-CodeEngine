@@ -29,11 +29,10 @@ fn main() -> Result<()> {
     };
 
     let ctx = get_strategy_for(lang);
-
-    ctx.warm_up();
-
     // Create the code folder
     fs::create_dir_all("./unsafe").expect("TODO: panic message");
+    ctx.warm_up();
+
 
     // Open connection.
     let mut connection = Connection::insecure_open("amqp://user:2ANj6hH47G1ViFCuX23jLIBpX@51.195.149.191:5672")?;
