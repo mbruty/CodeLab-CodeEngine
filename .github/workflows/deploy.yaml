@@ -57,6 +57,8 @@ jobs:
         with:
           name: build
           path: ./target/release/
+      - name: Make engine executable
+        run: chmod +x ./target/release/code_engine_rust
       - name: Lowercase REPO
         run: |
           echo "REPO=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
