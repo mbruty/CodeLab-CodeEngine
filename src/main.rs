@@ -35,7 +35,7 @@ fn main() -> Result<()> {
 
 
     // Open connection.
-    let mut connection = Connection::insecure_open("amqp://user:2ANj6hH47G1ViFCuX23jLIBpX@51.195.149.191:5672")?;
+    let mut connection = Connection::insecure_open("amqp://user:2ANj6hH47G1ViFCuX23jLIBpX@213.171.211.224:5672")?;
 
     // Open a channel - None says let the library choose the channel ID.
     let channel = connection.open_channel(None)?;
@@ -54,7 +54,6 @@ fn main() -> Result<()> {
 
     // Start a consumer.
     let consumer = queue.consume(ConsumerOptions::default())?;
-
     ctx.print_greeting();
     for (_i, message) in consumer.receiver().iter().enumerate() {
         match message {
