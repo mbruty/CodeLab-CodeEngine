@@ -3,9 +3,6 @@ use crate::utils::{exec_command_output, write_to_file};
 
 pub struct BunTypeScriptStrategy;
 impl Strategy for BunTypeScriptStrategy {
-    fn warm_up(&self)  {
-    }
-
     // We don't build here in JS land
     fn build(&self, code: &str) -> Result<String, String> {
         // Write the program to fs
