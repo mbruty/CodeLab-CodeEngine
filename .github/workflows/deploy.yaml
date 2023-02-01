@@ -43,6 +43,8 @@ jobs:
             image: dotnet-engine
           - dockerfile: ./docker/typescript.dockerfile
             image: typescript-engine
+          - dockerfile: ./docker/python.dockerfile
+            image: python
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3

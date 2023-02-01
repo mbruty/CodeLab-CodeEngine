@@ -3,6 +3,7 @@ use crate::Languages;
 pub mod dotnet_strategy;
 pub mod bunjs_strategy;
 pub mod bunts_strategy;
+pub mod py_strategy;
 
 pub trait Strategy {
     fn build(&self, code: &str) -> Result<String, String>;
@@ -19,6 +20,7 @@ pub fn get_strategy_for(lang: Languages) -> Box<dyn Strategy> {
         Languages::Dotnet => Box::new(dotnet_strategy::DotnetStrategy),
         Languages::JavaScript => Box::new(bunjs_strategy::BunJavaScriptStrategy),
         Languages::TypeScript => Box::new(bunts_strategy::BunTypeScriptStrategy),
-        Languages::BunJavaScript => Box::new(bunjs_strategy::BunJavaScriptStrategy)
+        Languages::BunJavaScript => Box::new(bunjs_strategy::BunJavaScriptStrategy),
+        Languages::Python => Box::new(py_strategy::PythonStrategy)
     }
 }

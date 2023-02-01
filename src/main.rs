@@ -25,6 +25,7 @@ fn main() -> Result<()> {
         "--language=javascript" => Languages::JavaScript,
         "--language=typescript" => Languages::TypeScript,
         "--language=bun" => Languages::BunJavaScript,
+        "--language=python" => Languages::Python,
         _ => panic!("No language provided!")
     };
 
