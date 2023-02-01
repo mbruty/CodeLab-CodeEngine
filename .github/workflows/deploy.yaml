@@ -44,7 +44,7 @@ jobs:
           - dockerfile: ./docker/typescript.dockerfile
             image: typescript-engine
           - dockerfile: ./docker/python.dockerfile
-            image: python
+            image: python-engine
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3

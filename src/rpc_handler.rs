@@ -9,7 +9,9 @@ use serde::{Serialize, Deserialize};
 #[derive(Deserialize)]
 struct Instruction {
     code: String,
-    test: String
+    test: String,
+    file: Option<String>,
+    file_name: Option<String>
 }
 
 #[derive(Serialize)]
@@ -33,6 +35,9 @@ pub fn handle(instruction: &str, language: Languages) -> String {
     // Temp: Just build without validation
     let now = Instant::now();
     let deserialized: Instruction = serde_json::from_str(&instruction).unwrap();
+    if deserialized.file.is_some() && deserialized.file_name.is_some() {
+        ctx.write_files(deserialized.file.unwrap().as_str(), deserialized.file_name.unwrap().as_str());
+    }
     ctx.setup_tests(&*deserialized.test);
     if let Err(e) = ctx.build(&*deserialized.code) {
         let code_result = CodeResult{

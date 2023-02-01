@@ -1,4 +1,5 @@
 use crate::Languages;
+use crate::utils::{write_to_file};
 
 pub mod dotnet_strategy;
 pub mod bunjs_strategy;
@@ -7,6 +8,11 @@ pub mod py_strategy;
 
 pub trait Strategy {
     fn build(&self, code: &str) -> Result<String, String>;
+
+    fn write_files(&self, file: &str, file_name: &str) {
+        write_to_file(file, file_name);
+    }
+
     fn setup_tests(&self, tests: &str) -> String;
     fn run<'a>(&self) -> (String, bool);
     fn get_command(&self) -> &'static str;
