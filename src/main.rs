@@ -4,7 +4,10 @@ use amiquip::{
     AmqpProperties, Connection, ConsumerMessage, ConsumerOptions, Exchange, Publish,
     QueueDeclareOptions, Result,
 };
+extern crate redis;
 use std::time::Instant;
+use redis::{Commands};
+use serde_derive::Deserialize;
 use crate::languages::Languages;
 use crate::rpc_handler::handle;
 use crate::strategies::get_strategy_for;
@@ -13,7 +16,18 @@ mod utils;
 mod languages;
 mod rpc_handler;
 
+#[derive(Deserialize)]
+pub struct Instruction {
+    id: String,
+    code: String,
+    test: String,
+    file: Option<String>,
+    file_name: Option<String>
+}
+
 fn main() -> Result<()> {
+    let client = redis::Client::open("redis://default:GjgXGvNUDhT0WBxLdbnRKAnKVPUuOJkR@redis-13064.c250.eu-central-1-1.ec2.cloud.redislabs.com:13064").unwrap();
+    let mut con = client.get_connection().unwrap();
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
@@ -71,8 +85,27 @@ fn main() -> Result<()> {
                         continue;
                     }
                 };
+
+                let deserialized: Instruction = serde_json::from_str(&body.borrow()).unwrap();
+                // Get the item from Redis
+                let x: i32 = con.hget(format!("Task:{}", deserialized.id), "retryCount").expect("Could not get task from redis");
+
+                // Max retries of 3, remove this from the queue
+                if x >= 3 {
+                    con.del::<String, i32>(format!("Task:{}", deserialized.id)).expect("Could not remove key from redis");
+                    con.srem::<&str, String, i32>("Task", deserialized.id).expect("Could not remove item from set");
+                    exchange.publish(Publish::with_properties(
+                        "Max retry hit".as_bytes(),
+                        reply_to,
+                        AmqpProperties::default().with_correlation_id(corr_id),
+                    ))?;
+                    consumer.reject(delivery, false)?;
+                    break;
+                }
+
+                let _: i32 = con.hincr(format!("Task:{}", deserialized.id), "retryCount", 1).expect("Could not increment retry count");
                 let now = Instant::now();
-                let response = handle(body.borrow(), lang);
+                let response = handle(serde_json::from_str(&body.borrow()).unwrap(), lang);
                 let elapsed = now.elapsed();
                 println!("[.] Replied in: {:.2?}", elapsed);
                 exchange.publish(Publish::with_properties(
@@ -81,6 +114,8 @@ fn main() -> Result<()> {
                     AmqpProperties::default().with_correlation_id(corr_id),
                 ))?;
                 consumer.ack(delivery)?;
+                con.del::<String, i32>(format!("Task:{}", deserialized.id)).expect("Could not remove key from redis");
+                con.srem::<&str, String, i32>("Task", deserialized.id).expect("Could not remove item from set");
                 break;
             }
             other => {

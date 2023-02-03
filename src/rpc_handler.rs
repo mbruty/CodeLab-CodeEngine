@@ -1,18 +1,10 @@
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Instant;
-use crate::{get_strategy_for, Languages};
+use crate::{get_strategy_for, Instruction, Languages};
 use crate::utils::{exec_command, get_stats, process_stats};
 use crate::strategies::Strategy;
-use serde::{Serialize, Deserialize};
-
-#[derive(Deserialize)]
-struct Instruction {
-    code: String,
-    test: String,
-    file: Option<String>,
-    file_name: Option<String>
-}
+use serde::{Serialize};
 
 #[derive(Serialize)]
 struct Stat {
@@ -28,18 +20,18 @@ struct CodeResult {
     error_text: String,
     is_successful: bool
 }
-pub fn handle(instruction: &str, language: Languages) -> String {
+
+pub fn handle(instruction: Instruction, language: Languages) -> String {
     // ToDo: Read this with commandline args
     let ctx: Box<dyn Strategy> = get_strategy_for(language);
 
     // Temp: Just build without validation
     let now = Instant::now();
-    let deserialized: Instruction = serde_json::from_str(&instruction).unwrap();
-    if deserialized.file.is_some() && deserialized.file_name.is_some() {
-        ctx.write_files(deserialized.file.unwrap().as_str(), deserialized.file_name.unwrap().as_str());
+    if instruction.file.is_some() && instruction.file_name.is_some() {
+        ctx.write_files(instruction.file.unwrap().as_str(), instruction.file_name.unwrap().as_str());
     }
-    ctx.setup_tests(&*deserialized.test);
-    if let Err(e) = ctx.build(&*deserialized.code) {
+    ctx.setup_tests(&*instruction.test);
+    if let Err(e) = ctx.build(&*instruction.code) {
         let code_result = CodeResult{
             output: "".parse().unwrap(),
             stats: Vec::new(),
