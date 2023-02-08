@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
-use std::thread;
+use std::{process, thread, time};
 use std::time::Instant;
+use redis::Commands;
 use crate::{get_strategy_for, Instruction, Languages};
 use crate::utils::{exec_command, get_stats, process_stats};
 use crate::strategies::Strategy;
@@ -19,6 +20,16 @@ struct CodeResult {
     execution_time_ms: u32,
     error_text: String,
     is_successful: bool
+}
+
+fn start_time_out_thread(id: String) {
+    thread::spawn(move || {
+        thread::sleep(time::Duration::from_millis(10_000));
+        let client = redis::Client::open("redis://default:GjgXGvNUDhT0WBxLdbnRKAnKVPUuOJkR@redis-13064.c250.eu-central-1-1.ec2.cloud.redislabs.com:13064").unwrap();
+        let mut con = client.get_connection().unwrap();
+        con.hset::<String, &str, &str, i32>(format!("Task:{}", id), "failureReason", "Process timed out: program execution took more than 10 seconds.").expect("Could not set failure reason.");
+        process::exit(10);
+    });
 }
 
 pub fn handle(instruction: Instruction, language: Languages) -> String {
@@ -43,6 +54,8 @@ pub fn handle(instruction: Instruction, language: Languages) -> String {
     }
     let elapsed = now.elapsed();
     println!("[.{}] build took: {:.2?}", ctx.get_queue_name(), elapsed);
+
+    start_time_out_thread(instruction.id);
 
     let command = ctx.get_command();
     let shared_command = Arc::new(Mutex::new(command));

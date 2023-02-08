@@ -89,7 +89,21 @@ fn main() -> Result<()> {
                 let deserialized: Instruction = serde_json::from_str(&body.borrow()).unwrap();
                 // Get the item from Redis
                 let x: i32 = con.hget(format!("Task:{}", deserialized.id), "retryCount").expect("Could not get task from redis");
+                let failure_reason: String = con.hget(format!("Task:{}", deserialized.id), "failureReason").expect("Could not get failure reason");
 
+                // If we have a failure reason
+                if failure_reason != "none" {
+                    con.del::<String, i32>(format!("Task:{}", deserialized.id)).expect("Could not remove key from redis");
+                    con.srem::<&str, String, i32>("Task", deserialized.id).expect("Could not remove item from set");
+                    exchange.publish(Publish::with_properties(
+                        failure_reason.as_bytes(),
+                        reply_to,
+                        AmqpProperties::default().with_correlation_id(corr_id),
+                    ))?;
+                    consumer.reject(delivery, false)?;
+
+                    break;
+                }
                 // Max retries of 3, remove this from the queue
                 if x >= 3 {
                     con.del::<String, i32>(format!("Task:{}", deserialized.id)).expect("Could not remove key from redis");
