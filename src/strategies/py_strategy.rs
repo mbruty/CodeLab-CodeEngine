@@ -13,13 +13,14 @@ impl Strategy for PythonStrategy {
         String::new()
     }
 
-    fn run(&self) -> (String, bool) {
+    fn run(&self) -> (String, String, bool) {
         let output = exec_command_output("python3", Vec::from(["tests.py"]));
+        let console_data = String::from_utf8(output.stdout).expect("Stdout was not a string");
         let data = String::from_utf8(output.stderr).expect("Stdout was not a string");
         let split: Vec<&str> = data.split('\n').collect();
         let element = split[split.len() - 2].trim();
         let success = element == "OK";
-        (data, success)
+        (console_data, data, success)
     }
 
     fn get_command(&self) -> &'static str { "python3" }

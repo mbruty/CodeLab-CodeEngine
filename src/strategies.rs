@@ -14,7 +14,7 @@ pub trait Strategy {
     }
 
     fn setup_tests(&self, tests: &str) -> String;
-    fn run<'a>(&self) -> (String, bool);
+    fn run<'a>(&self) -> (String, String, bool);
     fn get_command(&self) -> &'static str;
     fn get_queue_name(&self) -> &'static str;
     fn print_greeting(&self);

@@ -15,6 +15,7 @@ struct Stat {
 
 #[derive(Serialize)]
 struct CodeResult {
+    console_output: String,
     output: String,
     stats: Vec<Stat>,
     execution_time_ms: u32,
@@ -44,6 +45,7 @@ pub fn handle(instruction: Instruction, language: Languages) -> String {
     ctx.setup_tests(&*instruction.test);
     if let Err(e) = ctx.build(&*instruction.code) {
         let code_result = CodeResult{
+            console_output: "".parse().unwrap(),
             output: "".parse().unwrap(),
             stats: Vec::new(),
             execution_time_ms: 0,
@@ -60,12 +62,14 @@ pub fn handle(instruction: Instruction, language: Languages) -> String {
     let command = ctx.get_command();
     let shared_command = Arc::new(Mutex::new(command));
     let shared_output = Arc::new(Mutex::new(String::new()));
+    let shared_console_output = Arc::new(Mutex::new(String::new()));
     let shared_stats = Arc::new(Mutex::new(String::new()));
     let shared_time = Arc::new(Mutex::new(String::new()));
     let shared_sucess = Arc::new(Mutex::new(false));
     // Clone the output and stats here so shared_output is not moved into the thread closure
     // This allows us to access it again in the current closure
     let output = Arc::clone(&shared_output);
+    let console_output = Arc::clone(&shared_console_output);
     let stats = Arc::clone(&shared_stats);
     let time = Arc::clone(&shared_time);
     let sucess = Arc::clone(&shared_sucess);
@@ -114,13 +118,15 @@ pub fn handle(instruction: Instruction, language: Languages) -> String {
         // Clone the objects we need
         // Lock the items we need
         let mut output_mutex = output.lock().unwrap();
+        let mut console_output_mutex = console_output.lock().unwrap();
         let mut sucess_mutex = sucess.lock().unwrap();
         let mut time_mutex = time.lock().unwrap();
 
         let now = Instant::now();
         let output = ctx_1.run();
-        *output_mutex = output.0;
-        *sucess_mutex = output.1;
+        *console_output_mutex = output.0;
+        *output_mutex = output.1;
+        *sucess_mutex = output.2;
         let elapsed = now.elapsed();
 
         *time_mutex = format!("{:.2?}", elapsed.as_millis());
@@ -132,10 +138,12 @@ pub fn handle(instruction: Instruction, language: Languages) -> String {
 
     // Copy the results
     let output_copy = Arc::clone(&shared_output);
+    let console_output_copy = Arc::clone(&shared_console_output);
     let stats_copy = Arc::clone(&shared_stats);
     let time_copy = Arc::clone(&shared_time);
     let sucess_copy = Arc::clone(&shared_sucess);
     let final_output = output_copy.lock().unwrap();
+    let final_console_output = console_output_copy.lock().unwrap();
     let final_stats = stats_copy.lock().unwrap();
     let final_time = time_copy.lock().unwrap();
     let final_sucess = sucess_copy.lock().unwrap();
@@ -152,6 +160,7 @@ pub fn handle(instruction: Instruction, language: Languages) -> String {
     let processed = ctx.process_result(final_output.to_string());
 
     let code_result = CodeResult{
+        console_output: final_console_output.to_string(),
         output: processed.0,
         stats,
         execution_time_ms: if processed.1 == -1 { final_time.parse().unwrap() } else { processed.1 } as u32,
