@@ -26,7 +26,7 @@ impl Strategy for DotnetStrategy {
     }
 
     fn run(&self) -> (String, String, bool) {
-        let output = exec_command_output("timeout", Vec::from(["-s", "SIGKILL", "1m","./bin/Release/net6.0/Application"]));
+        let output = exec_command_output("./bin/Release/net6.0/Application", Vec::from([]));
         let stdout = String::from_utf8(output.stdout).expect("");
         let stderr = String::from_utf8(output.stderr).expect("");
 
@@ -59,9 +59,6 @@ impl Strategy for DotnetStrategy {
                 output.push(split[0]);
             }
             split.remove(0);
-            if split.len() == 0 {
-                return ("Proccess was stopped for taking over 1 minute to execute".parse().unwrap(), -1)
-            }
         }
 
         for line in &split {
