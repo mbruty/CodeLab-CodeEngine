@@ -6,7 +6,7 @@ RUN dpkg -i packages-microsoft-prod.deb
 RUN rm packages-microsoft-prod.deb
 RUN apt-get update
 RUN apt-get install -y bash curl unzip procps sysstat dotnet-sdk-7.0
-COPY ./warmup-code/dotnet ./unsafe
+COPY ./setup-code/dotnet ./unsafe
 RUN dotnet build ./unsafe --configuration Release
 COPY ./target/release/code_engine_rust .
 RUN rm ./unsafe/Solution.cs
