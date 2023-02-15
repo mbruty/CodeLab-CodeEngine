@@ -9,4 +9,4 @@ def show():
     base64_encoded = base64.b64encode(bytes.read()).decode()
     print("<%media> data:image/jpeg;base64," + base64_encoded)
 
-plt.imshow = show
+plt.show = show
