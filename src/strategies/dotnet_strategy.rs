@@ -26,7 +26,7 @@ impl Strategy for DotnetStrategy {
     }
 
     fn run(&self) -> (String, String, bool) {
-        let output = exec_command_output("./bin/Release/net6.0/Application", Vec::from([]));
+        let output = exec_command_output("./bin/Release/net7.0/Application", Vec::from([]));
         let stdout = String::from_utf8(output.stdout).expect("");
         let stderr = String::from_utf8(output.stderr).expect("");
 

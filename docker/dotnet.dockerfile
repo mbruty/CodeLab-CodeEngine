@@ -11,5 +11,5 @@ RUN dotnet build ./unsafe --configuration Release
 COPY ./target/release/code_engine_rust .
 RUN rm ./unsafe/Solution.cs
 RUN rm ./unsafe/UnitTests.cs
-RUN rm ./unsafe/bin/Release/net6.0/Application
+RUN rm ./unsafe/bin/Release/net7.0/Application
 ENTRYPOINT ["./code_engine_rust", "--language=dotnet"]
