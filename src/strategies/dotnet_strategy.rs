@@ -47,6 +47,11 @@ impl Strategy for DotnetStrategy {
         let mut output: Vec<&str> = Vec::new();
         let mut gather_errors = false;
         let mut exec_time_ms: i32 = -1;
+
+        if split.len() == 0 {
+            println!("{}", data);
+            return (data, -1)
+        }
         // Remove un-necessary lines
         while split[0] != "Test Run Summary" {
             if split[0] == "Errors, Failures and Warnings" {
