@@ -39,8 +39,11 @@ pub fn handle(instruction: Instruction, language: Languages) -> String {
 
     // Temp: Just build without validation
     let now = Instant::now();
-    if instruction.file.is_some() && instruction.file_name.is_some() {
-        ctx.write_files(instruction.file.unwrap().as_str(), instruction.file_name.unwrap().as_str());
+    if instruction.files.is_some() {
+        for file in instruction.files.unwrap() {
+            println!("File: {}", file.file_name);
+            ctx.write_files(file.file_text.as_str(), file.file_name   .as_str());
+        }
     }
     ctx.setup_tests(&*instruction.test);
     if let Err(e) = ctx.build(&*instruction.code) {

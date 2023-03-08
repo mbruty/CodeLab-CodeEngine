@@ -17,12 +17,19 @@ mod languages;
 mod rpc_handler;
 
 #[derive(Deserialize)]
+pub struct File {
+    #[serde(rename = "fileName")]
+    file_name: String,
+    #[serde(rename = "fileText")]
+    file_text: String
+}
+
+#[derive(Deserialize)]
 pub struct Instruction {
     id: String,
     code: String,
     test: String,
-    file: Option<String>,
-    file_name: Option<String>
+    files: Option<Vec<File>>
 }
 
 fn main() -> Result<()> {
