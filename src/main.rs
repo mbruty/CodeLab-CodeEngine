@@ -33,7 +33,7 @@ pub struct Instruction {
 }
 
 fn main() -> Result<()> {
-    let client = redis::Client::open("redis://default:GjgXGvNUDhT0WBxLdbnRKAnKVPUuOJkR@redis-13064.c250.eu-central-1-1.ec2.cloud.redislabs.com:13064").unwrap();
+    let client = redis::Client::open("redis://default:GjgXGvNUDhT0WBxLdbnRKAnKVPUuOJkR@213.171.211.224:6379").unwrap();
     let mut con = client.get_connection().unwrap();
     let args: Vec<String> = env::args().collect();
 
