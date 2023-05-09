@@ -57,19 +57,23 @@ Ensure that you have yout GitHub personal-access-token linked to docker.
 ### Docker
 #### Dotnet
 Run `docker pull ghcr.io/mbruty/mike-codelab-codeengine/dotnet-engine`
+
 Run `docker run --rm ghcr.io/mbruty/mike-codelab-codeengine/dotnet-engine`
 
 #### JavaScript
 Run `docker pull ghcr.io/mbruty/mike-codelab-codeengine/bun-engine`
+
 Run `docker run --rm ghcr.io/mbruty/mike-codelab-codeengine/bun-engine`
 
 #### TypeScript
 Run `docker pull ghcr.io/mbruty/mike-codelab-codeengine/typescript-engine`
+
 Run `docker run --rm ghcr.io/mbruty/mike-codelab-codeengine/typescript-engine`
 
 
 #### Python
 Run `docker pull ghcr.io/mbruty/mike-codelab-codeengine/python-engine`
+
 Run `docker run --rm ghcr.io/mbruty/mike-codelab-codeengine/python-engine`
 
 ## Technologies uesd
